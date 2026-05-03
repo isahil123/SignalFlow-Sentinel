@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  redis:
+    image: redis:7
+    container_name: notifications-redis
+    ports:
+      - "6379:6379"
+
+  notifications-backend:
+    build:
+      context: ./backend
+    container_name: notifications-backend
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - MONGODB_URI=${MONGODB_URI}
+      - REDIS_URL=redis://redis:6379
+    command: node src/server.js
+    depends_on:
+      - redis
+
+  notifications-frontend:
+    build:
+      context: ./frontend
+    container_name: notifications-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - VITE_SOCKET_URL=http://localhost:4000
+    depends_on:
+      - notifications-backend

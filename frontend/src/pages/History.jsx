@@ -1,0 +1,1 @@
+import React from "react"; export default function History() { return <div className="p-6"><h1>History Live</h1></div>; }
